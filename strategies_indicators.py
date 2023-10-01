@@ -1,4 +1,3 @@
-
 import cufflinks as cf
 import numpy as np
 import pandas as pd
@@ -311,6 +310,57 @@ def date_difference(df1, df2):
 
 def check_day_data(df, day):
     return df[df.index.date == pd.to_datetime(day).date()]
+
+def plot_generic(df, col1, col2, dates_of_buy, dates_of_sell):
+    """# plot buy / sell dates
+    fig = make_subplots(rows=1, cols=1, shared_xaxes=True)
+
+    # Add traces for short long
+    fig.add_trace(go.Scatter(x=df.index, y=df["Close"], mode='lines', name="Close"))
+    fig.add_trace(go.Scatter(x=df.index, y=df[col1], mode='lines', name=col1))
+    fig.add_trace(go.Scatter(x=df.index, y=df[col2], mode='lines', name=col2))
+
+    # Add vertical lines at specified dates
+    for date in dates_of_buy:
+        fig.add_shape(type="line", x0=date, x1=date, y0=0, y1=1, xref="x", yref="paper", line=dict(color="green", dash="dash"))
+    for date in dates_of_sell:
+        fig.add_shape(type="line", x0=date, x1=date, y0=0, y1=1, xref="x", yref="paper", line=dict(color="red", dash="dash"))
+
+    # Update the layout and display the plot
+    fig.update_layout(title_text=f"Stock Prices & Strategy", xaxis_title="Date", width=1200, height=600)
+    fig.show()"""
+
+    # Create subplots with 2 y-axes
+    fig = make_subplots(rows=1, cols=1, shared_xaxes=True, specs=[[{'secondary_y': True}]])
+
+    # Add traces for Close on the left y-axis
+    fig.add_trace(go.Scatter(x=df.index, y=df["Close"], mode='lines', name="Close"))
+
+    # Add traces for col1 and col2 on the right y-axis
+    fig.add_trace(go.Scatter(x=df.index, y=df[col1], mode='lines', name=col1, yaxis='y2'))
+    fig.add_trace(go.Scatter(x=df.index, y=df[col2], mode='lines', name=col2, yaxis='y2'))
+
+    # Add vertical lines at specified dates
+    for date in dates_of_buy:
+        fig.add_shape(type="line", x0=date, x1=date, y0=0, y1=1, xref="x", yref="paper", line=dict(color="green", dash="dash"))
+    for date in dates_of_sell:
+        fig.add_shape(type="line", x0=date, x1=date, y0=0, y1=1, xref="x", yref="paper", line=dict(color="red", dash="dash"))
+
+    # Update the layout and display the plot
+    fig.update_layout(
+        title_text=f"Stock Prices & Strategy",
+        xaxis_title="Date",
+        xaxis_rangeslider_visible=True,  # Add a range slider for zooming
+        width=1200,
+        height=600
+    )
+
+    # Set the y-axis titles
+    fig.update_yaxes(title_text="Close", range=[df["Close"].min(), df["Close"].max()], row=1, col=1)
+    fig.update_yaxes(title_text=col1, range=[df[col1].min(), df[col1].max()], secondary_y=True, row=1, col=1)
+    fig.update_yaxes(title_text=col2, range=[df[col2].min(), df[col2].max()], secondary_y=True, row=1, col=1)
+
+    fig.show()
 
 def plot_strategy(df, dates_of_buy, dates_of_sell):
     # find strategy    
